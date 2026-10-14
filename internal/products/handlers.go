@@ -1,23 +1,34 @@
 package products
 
 import (
-	"encoding/json"
+	"log"
 	"net/http"
+
+	"github.com/amiraghayari/Ecom-API-Go/internal/json"
 )
 
+// struct
 type handler struct {
 	service Service
 }
 
+// constructor
 func NewHandler(service Service) *handler {
 	return &handler{
 		service: service,
 	}
 }
 
+// handler method
 func (h *handler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	// 1.call the service
-	// 2.return JSON & http response
+	err := h.service.ListProducts(r.Context())
+
+	if err != nil {
+		log.Println("error while listing products:", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	products := struct {
 		Products []string `json:"products"`
 	}{}
